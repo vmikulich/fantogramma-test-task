@@ -2,68 +2,45 @@
   <el-container>
     <el-row>
       <el-col :span="24">
-        <router-link
-          tag="el-button"
-          to="/"
-        >
-          Go to home
-        </router-link>
-        <router-link
-          tag="el-button"
-          to="/canvas"
-        >
-          Go to canvas
-        </router-link>
+        <Button 
+          message="Go to home"
+          path="/"
+        />
+        <Button 
+          message="Go to canvas"
+          path="/canvas"
+        />
       </el-col>
     </el-row>
-    <div>
+    <div class="test">
       <el-table
-        :data="fruits">
+        :data="fruitsSortHandle"
+        border
+      >
         <el-table-column
           prop="key">
-          <template slot="header">
-            Keys
+          <template 
+            slot="header"
+          >
+            <p 
+              @click="fruitSorter('id')"
+              :class="backgroundColorTh ? 'increasing-order' : 'descending-order'"
+            >
+              Keys</p>
           </template>
         </el-table-column>
         <el-table-column
           prop="fruit">
           <template slot="header">
-            Fruit
+            <p 
+              @click="fruitSorter('fruit')"
+              :class="backgroundColorTh ? 'increasing-order' : 'descending-order'"
+            >Fruit</p>        
           </template>
         </el-table-column>
-        <!-- <el-table-column
-          align="right">
-          <template slot="header">
-            <el-input
-              v-model="search"
-              size="mini"
-              placeholder="Type to search"/>
-          </template> -->
-          <!-- <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
-          </template> -->
-        <!-- </el-table-column> -->
       </el-table>
-      <!-- <table cellspacing="0">
-        <tr>
-          <th>Key</th>
-          <th @click="fruitSorter">Fruits</th>
-        </tr>
-        <tr 
-          v-for="line in fruits"
-          :key="line.key"
-        >
-          <td>{{ line.key }}</td>
-          <td>{{ line.fruit }}</td>
-        </tr>
-      </table> -->
     </div>
+    <p :class="backgroundColorTh ? 'increasing-order' : 'descending-order'">{{this.sortedState}}</p>
   </el-container>
 </template>
 
@@ -71,14 +48,18 @@
 import { useStore } from 'vuex-simple';
 import { Component, Vue } from 'vue-property-decorator'
 import { Fruits } from '../store/fruits'
+import Button from './UI/Button'
 
 
-@Component
+@Component({
+  components: {Button}
+})
 export default class Table extends Vue {
 
-  public store: Fruits = useStore(this.$store)
+  store: Fruits = useStore(this.$store)
+  fieldToSort = 'id'
+  sortedState = true
 
-  public sortedState = true
 
   mounted() {
     this.store.fetchFruits()
@@ -90,35 +71,55 @@ export default class Table extends Vue {
     const formatFruitsObject: Array<object> = []
     for (let i = 0; i < keys.length; i++) {
       const keyValue: string = keys[i]
-      formatFruitsObject.push({key: keyValue, fruit: fruits[keyValue].fruit})
+      const id: number = +keys[i].slice(3)
+      formatFruitsObject.push({id: id, key: keyValue, fruit: fruits[keyValue].fruit})
     }
-    console.log(formatFruitsObject)
-    return formatFruitsObject.sort((a: object, b: object) => {
-      if (a['key'] > b['key']) {
-          return 1;
-      }
-
-      if (a['key'] < b['key']) {
-          return -1;
-      }
-
-      return 0;
-    })
+    return formatFruitsObject
   }
 
-  fruitSorter() {
-    console.log('click')
-    this.fruits.sort((a, b) => {
-      if (a['key'] > b['key']) {
-          return 1;
-      }
+  get fruitsSortHandle(): Array<object> {
+    const sortedFruits = this.fruits
+    const activeField = this.fieldToSort
+    if (this.sortedState) {
+      sortedFruits.sort((a: object, b: object) => {
+        if (a[activeField] > b[activeField]) {
+          return 1
+        }
+        if (a[activeField] < b[activeField]) {
+          return -1
+        }
+        return 0
+      })
+    } else {
+      sortedFruits.sort((a: object, b: object) => {
+        if (a[activeField] > b[activeField]) {
+          return -1
+        }
+        if (a[activeField] < b[activeField]) {
+          return 1
+        }
+        return 0
+      })
+    }
+    return sortedFruits
+  }
 
-      if (a['key'] < b['key']) {
-          return -1;
-      }
+  get backgroundColorTh(): boolean {
+    return this.sortedState
+  }
 
-      return 0;
-    })
+  fruitSorter(field: string) {
+    if (this.fieldToSort !== field) {
+      this.fieldToSort = field
+    } else {
+      this.fieldToSort = field
+      this.sortedState = !this.sortedState
+    }
+  }
+
+  fruitNameSorter() {
+    this.fieldToSort = 'fruit'
+    this.sortedState = !this.sortedState
   }
 }
 </script>
@@ -129,10 +130,29 @@ export default class Table extends Vue {
     justify-content: center;
     align-content: center;
     align-items: center;
-    el-table {
+    .test {
       width: 100%;
-      // display: flex;
-      // justify-content: center;
+      display: flex;
+      justify-content: center;
+      .el-table {
+        max-width: 60%;
+        th {
+          padding: 0;
+          p {
+            text-align: center;
+            margin: 0;
+            color: #fff;
+          }
+        }
+      }
     }
+  }
+
+  .increasing-order {
+    background-color: rgb(0, 153, 255);
+  }
+
+  .descending-order {
+    background-color: rgb(15, 197, 55);
   }
 </style>

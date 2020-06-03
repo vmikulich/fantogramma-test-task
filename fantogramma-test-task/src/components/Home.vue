@@ -1,24 +1,23 @@
 <template>
   <el-container>
-    <router-link
-      tag="el-button"
-      to="/table"
-    >
-      Go to table
-    </router-link>
-    <router-link
-      tag="el-button"
-      to="/canvas"
-    >
-      Go to canvas
-    </router-link>
+    <Button 
+      message="Go to table"
+      path="/table"
+    />
+    <Button 
+      message="Go to canvas"
+      path="/canvas"
+    />
   </el-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import Button from './UI/Button'
 
-@Component
+@Component({
+  components: {Button}
+})
 export default class Home extends Vue {
  
 }

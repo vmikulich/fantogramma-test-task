@@ -18,12 +18,8 @@ export class Fruits {
 
   @Action()
   public async fetchFruits() {
-    // try {
-      const fruits = await axios.get('http://fantogramma.org/test.json')
-      this.setFruits(fruits.data)
-    // } catch(error) {
-    //   throw error
-    // }
+    const fruits = await axios.get('http://fantogramma.org/test.json')
+    this.setFruits(fruits.data)
   }
 
 }

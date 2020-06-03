@@ -6,13 +6,9 @@
           message="Go to home"
           path="/"
         />
-        <Button 
-          message="Go to canvas"
-          path="/canvas"
-        />
       </el-col>
     </el-row>
-    <div class="test">
+    <div class="table-container">
       <el-table
         :data="fruitsSortHandle"
         border
@@ -47,7 +43,7 @@
 <script lang="ts">
 import { useStore } from 'vuex-simple';
 import { Component, Vue } from 'vue-property-decorator'
-import { Fruits } from '../store/fruits'
+import { Store } from '../store/store'
 import Button from './UI/Button'
 
 
@@ -56,17 +52,17 @@ import Button from './UI/Button'
 })
 export default class Table extends Vue {
 
-  store: Fruits = useStore(this.$store)
-  fieldToSort = 'id'
-  sortedState = true
+  private store: Store = useStore(this.$store)
+  private fieldToSort = 'id'
+  private sortedState = true
 
 
   mounted() {
-    this.store.fetchFruits()
+    this.store.fruits.fetchFruits()
   }
 
   get fruits(): Array<object> {
-    const fruits: object = this.store.getFruits
+    const fruits: object = this.store.fruits.getFruits
     const keys: string[] = Object.keys(fruits)
     const formatFruitsObject: Array<object> = []
     for (let i = 0; i < keys.length; i++) {
@@ -130,7 +126,7 @@ export default class Table extends Vue {
     justify-content: center;
     align-content: center;
     align-items: center;
-    .test {
+    .table-container {
       width: 100%;
       display: flex;
       justify-content: center;

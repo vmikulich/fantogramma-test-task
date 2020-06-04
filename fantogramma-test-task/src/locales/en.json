@@ -1,0 +1,12 @@
+{
+  "navButtons": {
+    "goToHome": "Go to home page",
+    "goToTable": "Go to table",
+    "goToCanvas": "Go to canvas"
+  },
+  "tableHeaders": {
+    "keys": "Keys",
+    "fruits": "Fruits"
+  },
+  "changeLanguage": "Change language"
+}

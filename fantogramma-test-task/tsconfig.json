@@ -14,7 +14,9 @@
     "suppressImplicitAnyIndexErrors": true,
     "types": [
       "webpack-env",
-      "jest"
+      "jest",
+      "webpack",
+      "webpack-env"
     ],
     "paths": {
       "@/*": [

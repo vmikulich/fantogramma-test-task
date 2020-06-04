@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24">
         <Button 
-          message="Go to home"
+          :message="$t('navButtons.goToHome')"
           path="/"
         />
       </el-col>
@@ -17,26 +17,32 @@
           prop="key">
           <template 
             slot="header"
+            slot-scope="scope"
           >
             <p 
               @click="fruitSorter('id')"
-              :class="backgroundColorTh ? 'increasing-order' : 'descending-order'"
+              :class="[activeField === 'id' ? backgroundColor : '', activeField === 'id' ? 'th-text-color' : '']"
             >
-              Keys</p>
+             {{ scope.$index = $t('tableHeaders.keys') }}
+            </p>
           </template>
         </el-table-column>
         <el-table-column
           prop="fruit">
-          <template slot="header">
+          <template 
+            slot="header"
+            slot-scope="scope"
+          >
             <p 
               @click="fruitSorter('fruit')"
-              :class="backgroundColorTh ? 'increasing-order' : 'descending-order'"
-            >Fruit</p>        
+              :class="[activeField === 'fruit' ? backgroundColor : '', activeField === 'fruit' ? 'th-text-color' : '']"
+            >
+              {{ scope.$index = $t('tableHeaders.fruits') }}
+            </p>        
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <p :class="backgroundColorTh ? 'increasing-order' : 'descending-order'">{{this.sortedState}}</p>
   </el-container>
 </template>
 
@@ -44,7 +50,7 @@
 import { useStore } from 'vuex-simple';
 import { Component, Vue } from 'vue-property-decorator'
 import { Store } from '../store/store'
-import Button from './UI/Button'
+import Button from './UI/Button.vue'
 
 
 @Component({
@@ -100,8 +106,16 @@ export default class Table extends Vue {
     return sortedFruits
   }
 
-  get backgroundColorTh(): boolean {
-    return this.sortedState
+  get backgroundColor(): string {
+    return this.sortedState ? 'increasing-order' : 'descending-order'
+  }
+
+  get backgroundColorThFruits(): boolean {
+    return this.sortedState && this.fieldToSort === 'fruit'
+  }
+
+  get activeField(): string {
+    return this.fieldToSort
   }
 
   fruitSorter(field: string) {
@@ -131,13 +145,13 @@ export default class Table extends Vue {
       display: flex;
       justify-content: center;
       .el-table {
+        margin-top: 20px;
         max-width: 60%;
         th {
           padding: 0;
           p {
             text-align: center;
             margin: 0;
-            color: #fff;
           }
         }
       }
@@ -150,5 +164,9 @@ export default class Table extends Vue {
 
   .descending-order {
     background-color: rgb(15, 197, 55);
+  }
+
+  .th-text-color {
+    color: #fff
   }
 </style>

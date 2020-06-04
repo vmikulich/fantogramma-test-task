@@ -1,11 +1,11 @@
 <template>
   <el-container>
     <Button 
-      message="Go to table"
+      :message="$t('navButtons.goToTable')"
       path="/table"
     />
     <Button 
-      message="Go to canvas"
+      :message="$t('navButtons.goToCanvas')"
       path="/canvas"
     />
   </el-container>
@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import Button from './UI/Button'
+import Button from './UI/Button.vue'
 
 @Component({
   components: {Button}

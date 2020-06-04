@@ -1,0 +1,12 @@
+{
+  "navButtons": {
+    "goToHome": "Перейти на домашнюю страницу",
+    "goToTable": "Перейти к таблице",
+    "goToCanvas": "Перейти к холсту"
+  },
+  "tableHeaders": {
+    "keys": "Ключи",
+    "fruits": "Фрукты"
+  },
+  "changeLanguage": "Изменить язык"
+}

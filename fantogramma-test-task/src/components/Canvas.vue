@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24">
         <Button 
-          message="Go to home"
+          :message="$t('navButtons.goToHome')"
           path="/"
         />
       </el-col>
@@ -18,7 +18,7 @@
 import { useStore } from 'vuex-simple';
 import { Component, Vue } from 'vue-property-decorator'
 import { Store } from '../store/store'
-import Button from './UI/Button'
+import Button from './UI/Button.vue'
 
 
 @Component({
@@ -27,9 +27,11 @@ import Button from './UI/Button'
 export default class Canvas extends Vue {
   
   private store: Store = useStore(this.$store)
-  private vueCanvasContext = null
-  private vueCanvas = null
-  private mouse = null
+  private vueCanvasContext = {}
+  private vueCanvas = {}
+  private mouse = {}
+  private squareWidth = 50
+  private squreHeight = 50
 
   private squareParams = {
     offsetX: 225,
@@ -39,12 +41,13 @@ export default class Canvas extends Vue {
   mounted() {
     this.store.imageForCanvas.fetchImage().then(() => {
       const canvas: HTMLCanvasElement = document.getElementById("canvas")
+      canvas.style.backgroundImage = `url(${this.backgroundCanvasImage})`
       this.vueCanvas = canvas
       const ctx: CanvasRenderingContext2D = canvas.getContext("2d")
       this.vueCanvasContext = ctx
-      //this.makeBaseImage(ctx)
-      this.mouse = this.getMouse(canvas)
+      this.mouse = this.getMouse(canvas, ctx)
       this.updateSquarePosition()
+      // this.makeBaseImage(ctx)
     })
   }
 
@@ -61,10 +64,6 @@ export default class Canvas extends Vue {
     }, false)
   }
 
-  // drawSquare(ctx: CanvasRenderingContext2D) {
-  //   ctx.fillRect(225,225,50,50)
-  // }
-
   updateSquarePosition(): void {
     requestAnimationFrame(this.updateSquarePosition)
 
@@ -74,16 +73,19 @@ export default class Canvas extends Vue {
       this.squareParams.offsetX += this.mouse.dx
       this.squareParams.offsetY += this.mouse.dy
     }
+    this.vueCanvasContext.beginPath()
     this.vueCanvasContext.fillStyle = 'rgba(0, 128, 0, 0.5)'
-    this.vueCanvasContext.fillRect(this.squareParams.offsetX, this.squareParams.offsetY, 50, 50)
+    this.vueCanvasContext.fillRect(this.squareParams.offsetX, this.squareParams.offsetY, this.squareWidth, this.squreHeight)
 
     this.mouse.update()
   }
 
-  getMouse(element: HTMLCanvasElement) {
+  getMouse(element: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     const mouse = {
-      x: 0, y: 0,
-      dx: 0, dy: 0,
+      x: 0, 
+      y: 0,
+      dx: 0,
+      dy: 0,
       left: false
     }
 
@@ -106,14 +108,22 @@ export default class Canvas extends Vue {
 
     element.addEventListener('mousedown', event => {
       const color: Array<number> = [0, 128, 0]
-      const imgData: Array<number> = this.vueCanvasContext.getImageData(mouse.x, mouse.y, 1, 1).data.slice(0, 3)
-      console.log(color)
-      console.log(imgData)
-      console.log(color.join(''))
-      console.log(imgData.join(''))
+      const imgData: Uint8ClampedArray = ctx.getImageData(mouse.x, mouse.y, 1, 1).data.slice(0, 3)
+      // const squareData = ctx.getImageData(this.squareParams.offsetX, this.squareParams.offsetX, 50, 50)
       if (event.button === 0 && color.join() === imgData.join()) {
         mouse.left = true
-        this.vueCanvasContext.fillStyle = 'rgba(0, 0, 255, 0.5)'
+        ctx.clearRect(this.squareParams.offsetX, this.squareParams.offsetX, this.squareWidth, this.squreHeight)
+        ctx.fillStyle = 'rgba(0, 0, 255, 0.5)'
+        ctx.fillRect(this.squareParams.offsetX, this.squareParams.offsetY, this.squareWidth, this.squreHeight)
+
+        // for (let i = 0; i < squareData.data.length; i += 4) {
+        //   // console.log('before', [squareData.data[i], squareData.data[i+1], squareData.data[i+2]])
+        //   squareData.data[i] = 0
+        //   squareData.data[i + 1] = 0
+        //   squareData.data[i + 2] = 255
+        //   // console.log('after', [squareData.data[i], squareData.data[i+1], squareData.data[i+2]])
+        // }
+        // ctx.putImageData(squareData, this.squareParams.offsetX, this.squareParams.offsetX)
       }
     })
 
@@ -122,7 +132,15 @@ export default class Canvas extends Vue {
         mouse.left = false
         this.squareParams.offsetX = 225
         this.squareParams.offsetY = 225
-        this.vueCanvasContext.fillStyle = 'rgba(0, 128, 0, 0.5)'
+      }
+    })
+
+    element.addEventListener('mouseleave', event => {
+      if (event.button === 0) {
+        mouse.left = false
+        this.squareParams.offsetX = 225
+        this.squareParams.offsetY = 225
+        // this.vueCanvasContext.fillStyle = 'rgba(0, 128, 0, 0.5)'
       }
     })
 
@@ -130,8 +148,9 @@ export default class Canvas extends Vue {
   }
 
   clearCanvas(): void {
-    const temp = this.vueCanvas.width
-    this.vueCanvas.width = temp
+    // const temp = this.vueCanvas.width
+    // this.vueCanvas.width = temp
+    this.vueCanvasContext.clearRect(0, 0, 500, 500)
   }
 }
 </script>
@@ -145,8 +164,6 @@ export default class Canvas extends Vue {
     .canvas-container {
       margin-top: 30px;
       #canvas {
-        // width: 500px;
-        // height: 500px;
         border: 1px solid red;
       }
     }

@@ -18,12 +18,17 @@ export class ImageForCanvas {
 
   @Action()
   public async fetchImage() {
-    const image = await axios({
-      url: 'http://fantogramma.org/test.png',
-      method: 'GET',
-      responseType: 'blob'
-    })
-    const url = window.URL.createObjectURL(new Blob([image.data]))
-    this.setImage(url)
+    try {
+      const image = await axios({
+        url: 'http://fantogramma.org/test.png',
+        method: 'GET',
+        responseType: 'blob'
+      })
+      const url = window.URL.createObjectURL(new Blob([image.data]))
+      this.setImage(url)
+      return url
+    } catch(error) {
+      return new Error(error)
+    }
   }
 }

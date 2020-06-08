@@ -26,7 +26,7 @@ export default class Home extends Vue {
 <style lang="scss" scoped>
   a {
     text-decoration: none;
-    color: #ffffff;
+    color: #fff;
   }
 
   .el-container {

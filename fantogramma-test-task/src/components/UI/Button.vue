@@ -17,7 +17,3 @@ export default class Home extends Vue {
   @Prop(String) readonly path!: string
 }
 </script>
-
-<style lang="scss" scoped>
-  
-</style>

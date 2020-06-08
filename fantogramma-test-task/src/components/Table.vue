@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { useStore } from 'vuex-simple';
+import { useStore } from 'vuex-simple'
 import { Component, Vue } from 'vue-property-decorator'
 import { Store } from '../store/store'
 import Button from './UI/Button.vue'
@@ -58,10 +58,16 @@ import Button from './UI/Button.vue'
 })
 export default class Table extends Vue {
 
-  private store: Store = useStore(this.$store)
-  private fieldToSort = 'id'
-  private sortedState = true
+  private store: Store
+  private fieldToSort: string
+  private sortedState: boolean
 
+  constructor() {
+    super()
+    this.store = useStore(this.$store)
+    this.fieldToSort = 'id'
+    this.sortedState = true
+  }
 
   mounted() {
     this.store.fruits.fetchFruits()
@@ -69,12 +75,17 @@ export default class Table extends Vue {
 
   get fruits(): Array<object> {
     const fruits: object = this.store.fruits.getFruits
-    const keys: string[] = Object.keys(fruits)
+    const fruitObjectTransfrorm: Array<object> = this.fruitObjectTransfrormation(fruits)
+    return fruitObjectTransfrorm
+  }
+
+  fruitObjectTransfrormation(fruitsObject: object): Array<object> {
+    const keys: string[] = Object.keys(fruitsObject)
     const formatFruitsObject: Array<object> = []
     for (let i = 0; i < keys.length; i++) {
       const keyValue: string = keys[i]
       const id: number = +keys[i].slice(3)
-      formatFruitsObject.push({id: id, key: keyValue, fruit: fruits[keyValue].fruit})
+      formatFruitsObject.push({id: id, key: keyValue, fruit: fruitsObject[keyValue].fruit})
     }
     return formatFruitsObject
   }
@@ -140,15 +151,19 @@ export default class Table extends Vue {
     justify-content: center;
     align-content: center;
     align-items: center;
+
     .table-container {
       width: 100%;
       display: flex;
       justify-content: center;
+
       .el-table {
         margin-top: 20px;
         max-width: 60%;
+
         th {
           padding: 0;
+
           p {
             text-align: center;
             margin: 0;
@@ -167,6 +182,6 @@ export default class Table extends Vue {
   }
 
   .th-text-color {
-    color: #fff
+    color: #fff;
   }
 </style>
